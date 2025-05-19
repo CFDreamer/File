@@ -1,0 +1,2001 @@
+
+-- File Name : SANGFOR-GENERAL-MIB.txt
+-- Date      : Mon Oct 11 17:01:21 CST 2010
+-- Author    : WebNMS Agent Toolkit C Edition - MibEditor 6
+
+
+
+SANGFOR-GENERAL-MIB	DEFINITIONS ::= BEGIN
+	IMPORTS
+		DisplayString, PhysAddress, snmp, system
+			FROM RFC1213-MIB
+		TEXTUAL-CONVENTION, DisplayString
+			FROM SNMPv2-TC
+		OBJECT-TYPE
+			FROM RFC-1212
+		enterprises
+			FROM RFC1155-SMI;
+
+-- TEXTUAL-CONVENTIONS --
+	PhysAddress ::= 		OCTET STRING
+
+	DisplayString ::= 		OCTET STRING
+
+	org	OBJECT IDENTIFIER
+		::=  {  iso  3  }
+
+	dod	OBJECT IDENTIFIER
+		::=  {  org  6  }
+
+	internet	OBJECT IDENTIFIER
+		::=  {  dod  1  }
+
+	private	OBJECT IDENTIFIER
+		::=  {  internet  4  }
+
+	enterprises	OBJECT IDENTIFIER
+		::=  {  private  1  }
+
+	sangfor	OBJECT IDENTIFIER
+		::=  {  enterprises  45577  }
+
+	general	OBJECT IDENTIFIER
+		::=  {  sangfor  1  }
+
+	product	OBJECT IDENTIFIER
+		::=  {  sangfor  2  }
+		
+	wac	OBJECT IDENTIFIER
+		::=  {  product  12  }
+
+	sfDeviceDescr	OBJECT-TYPE	
+		SYNTAX			OCTET STRING
+		ACCESS			read-only
+		STATUS			mandatory
+		DESCRIPTION		"Device name&model"
+		::=  {  general  1  }
+
+	sfSysDate	OBJECT-TYPE	
+		SYNTAX			OCTET STRING
+		ACCESS			read-only
+		STATUS			mandatory
+		DESCRIPTION		"System's date."
+		::=  {  general  2  }
+
+	sfSysCpuCostRate	OBJECT-TYPE	
+		SYNTAX			INTEGER
+		ACCESS			read-only
+		STATUS			mandatory
+		DESCRIPTION		"Cpu current cost percentage.The unit is  %."
+		::=  {  general  3  }
+
+	sfSysFreeMemory	OBJECT-TYPE	
+		SYNTAX			OCTET STRING
+		ACCESS			read-only
+		STATUS			mandatory
+		DESCRIPTION		"Free memory."
+		::=  {  general  4  }
+
+	sfDiskTable	OBJECT-TYPE
+		SYNTAX		SEQUENCE  OF  SfDiskEntry
+		ACCESS		not-accessible
+		STATUS		mandatory
+		DESCRIPTION	"Description"
+		::=  { general  5 }
+
+	sfDiskEntry	OBJECT-TYPE
+		SYNTAX		SfDiskEntry
+		ACCESS		not-accessible
+		STATUS		mandatory
+		DESCRIPTION	"Row Description"
+		INDEX		{  diskIndex  }
+		::=  { sfDiskTable 1 }
+
+	SfDiskEntry  ::=  SEQUENCE {
+		diskIndex  INTEGER,
+		sfFilesystemName  DisplayString,
+		sfDiskSize  DisplayString,
+		sfDiskUsed  DisplayString,
+		sfDiskAvail  DisplayString,
+		sfDiskUsedPercent  DisplayString
+		}
+
+
+	diskIndex	OBJECT-TYPE	
+		SYNTAX			INTEGER
+		ACCESS			not-accessible
+		STATUS			mandatory
+		DESCRIPTION		"Column Description"
+		::=  {  sfDiskEntry  1  }
+
+
+	sfFilesystemName	OBJECT-TYPE	
+		SYNTAX			DisplayString
+		ACCESS			read-only
+		STATUS			mandatory
+		DESCRIPTION		"Column Description"
+		::=  {  sfDiskEntry  2  }
+
+
+	sfDiskSize	OBJECT-TYPE	
+		SYNTAX			DisplayString
+		ACCESS			read-only
+		STATUS			mandatory
+		DESCRIPTION		"Column Description"
+		::=  {  sfDiskEntry  3  }
+
+
+	sfDiskUsed	OBJECT-TYPE	
+		SYNTAX			DisplayString
+		ACCESS			read-only
+		STATUS			mandatory
+		DESCRIPTION		"Column Description"
+		::=  {  sfDiskEntry  4  }
+
+
+	sfDiskAvail	OBJECT-TYPE	
+		SYNTAX			DisplayString
+		ACCESS			read-only
+		STATUS			mandatory
+		DESCRIPTION		"Column Description"
+		::=  {  sfDiskEntry  5  }
+
+
+	sfDiskUsedPercent	OBJECT-TYPE	
+		SYNTAX			DisplayString
+		ACCESS			read-only
+		STATUS			mandatory
+		DESCRIPTION		"Column Description"
+		::=  {  sfDiskEntry  6  }
+
+	CpuLoadAvg	OBJECT IDENTIFIER
+		::=  { general  6 }
+		
+	sfcpuName	OBJECT-TYPE	
+		SYNTAX			OCTET STRING 
+		ACCESS			read-only
+		STATUS			mandatory
+		DESCRIPTION		"CPU Name"
+		::=  {  CpuLoadAvg  1  }
+		
+	sfCpuLoadLast1Min	OBJECT-TYPE	
+		SYNTAX			OCTET STRING 
+		ACCESS			read-only
+		STATUS			mandatory
+		DESCRIPTION		"load average in past 1 minute."
+		::=  {  CpuLoadAvg  2  }
+
+	sfCpuLoadLast5Min	OBJECT-TYPE	
+		SYNTAX			OCTET STRING 
+		ACCESS			read-only
+		STATUS			mandatory
+		DESCRIPTION		"load average in past 5 minute."
+		::=  {  CpuLoadAvg  3  }
+		
+	sfCpuLoadLast15Min	OBJECT-TYPE	
+		SYNTAX			OCTET STRING 
+		ACCESS			read-only
+		STATUS			mandatory
+		DESCRIPTION		"load average in past 15 minute."
+		::=  {  CpuLoadAvg  4  }
+
+	sfEnableDoubleHost	OBJECT-TYPE	
+		SYNTAX			INTEGER  ( 0 .. 1  ) 
+		ACCESS			read-only
+		STATUS			mandatory
+		DESCRIPTION		"0--disable.1--enable"
+		::=  {  general  7  }
+
+	dhcp	OBJECT IDENTIFIER
+		::=  {  general  8  }
+		
+	sfEnableDHCP	OBJECT-TYPE	
+		SYNTAX			INTEGER  ( 0 .. 1  ) 
+		ACCESS			read-only
+		STATUS			mandatory
+		DESCRIPTION		"0--disable.1--enable."
+		::=  {  dhcp  1  }
+		
+	
+	sfDHCPTable	OBJECT-TYPE
+		SYNTAX		SEQUENCE  OF  sfDHCPEntry
+		ACCESS		not-accessible
+		STATUS		mandatory
+		DESCRIPTION	"Table of each interface's DHCP info"
+		::=  { dhcp  2 }	
+
+	sfDHCPEntry	OBJECT-TYPE
+		SYNTAX		sfDHCPEntry
+		ACCESS		not-accessible
+		STATUS		mandatory
+		DESCRIPTION	"entry of sfDHCPTable, when dhcp is disabled it has only one entry with zeros"
+		INDEX		{  dhcpIndex  }
+		::=  { sfDHCPTable 1 }
+		
+	sfDHCPEntry  ::=  SEQUENCE {
+		dhcpIndex  			INTEGER,
+		sfIfName  			OCTET STRING,
+		sfNumOfTotalIpAddr  INTEGER,
+		sfNumOfLeftIp  		INTEGER,
+		sfNumOfOccupyIp 	INTEGER,
+		sfStartIp  			OCTET STRING,
+		sfEndIp  			OCTET STRING,
+		sfIpUtRatio  		OCTET STRING
+		}
+		
+	dhcpIndex	OBJECT-TYPE	
+		SYNTAX			INTEGER
+		ACCESS			not-accessible
+		STATUS			mandatory
+		DESCRIPTION		"index of sfDHCPEntry"
+		::=  {  sfDHCPEntry  1  }
+		
+	sfIfName	OBJECT-TYPE	
+		SYNTAX			OCTET STRING
+		ACCESS			read-only
+		STATUS			mandatory
+		DESCRIPTION		"network interface's  name ."
+		::=  {  sfDHCPEntry  2  }
+
+	sfNumOfTotalIpAddr	OBJECT-TYPE	
+		SYNTAX			INTEGER
+		ACCESS			read-only
+		STATUS			mandatory
+		DESCRIPTION		"The total IP address's number in IP pool."
+		::=  {  sfDHCPEntry  3  }
+
+	sfNumOfLeftIp	OBJECT-TYPE	
+		SYNTAX			INTEGER
+		ACCESS			read-only
+		STATUS			mandatory
+		DESCRIPTION		"The number of left."
+		::=  {  sfDHCPEntry  4  }
+
+	sfNumOfOccupyIp	OBJECT-TYPE	
+		SYNTAX			INTEGER
+		ACCESS			read-only
+		STATUS			mandatory
+		DESCRIPTION		"The number which already be used."
+		::=  {  sfDHCPEntry  5  }
+		
+	sfStartIp			OBJECT-TYPE	
+		SYNTAX			OCTET STRING
+		ACCESS			read-only
+		STATUS			mandatory
+		DESCRIPTION		"The start ip address of ip pool."
+		::=  {  sfDHCPEntry  6  }
+		
+	sfEndIp				OBJECT-TYPE	
+		SYNTAX			OCTET STRING
+		ACCESS			read-only
+		STATUS			mandatory
+		DESCRIPTION		"The end ip address of ip pool."
+		::=  {  sfDHCPEntry  7  }
+		
+	sfIpUtRatio			OBJECT-TYPE	
+		SYNTAX			OCTET STRING
+		ACCESS			read-only
+		STATUS			mandatory
+		DESCRIPTION		"The Utilization ratio of ip address."
+		::=  {  sfDHCPEntry  8  }
+		
+	sfSysDhcpReTimes    OBJECT-TYPE
+		SYNTAX			INTEGER
+		ACCESS			read-only
+		STATUS			mandatory
+		DESCRIPTION		"DHCP requests times"
+		::=  {  dhcp  3	}
+	
+	sfSysDhcpSuTimes    OBJECT-TYPE
+		SYNTAX			INTEGER
+		ACCESS			read-only
+		STATUS			mandatory
+		DESCRIPTION		"DHCP request success times"
+		::=  {  dhcp  4 }
+		
+		
+	sfSysTotalMemory	OBJECT-TYPE	
+		SYNTAX			OCTET STRING
+		ACCESS			read-only
+		STATUS			mandatory
+		DESCRIPTION		"Total memory."
+		::=  {  general  9  }
+		
+	sfSysName		OBJECT-TYPE
+		SYNTAX		OCTET STRING
+		ACCESS		read-only
+		STATUS		mandatory
+		DESCRIPTION		"System's Name"
+		::=  {  general  10  }
+		
+	sfSysSupplier	OBJECT-TYPE
+		SYNTAX		OCTET STRING
+		ACCESS		read-only
+		STATUS		mandatory
+		DESCRIPTION		"System's supplier"
+		::=  {  general  11  }
+		
+	sfSysIp			OBJECT-TYPE
+		SYNTAX		OCTET STRING
+		ACCESS		read-only
+		STATUS		mandatory
+		DESCRIPTION		"System Ip address"
+		::=  {  general  12  }
+		
+	sfSysMac	    OBJECT-TYPE
+		SYNTAX		OCTET STRING
+		ACCESS		read-only
+		STATUS		mandatory
+		DESCRIPTION		"System Mac address"
+		::=  {  general  13  }
+	
+	sfSysSoftVer    OBJECT-TYPE
+		SYNTAX		OCTET STRING
+		ACCESS		read-only
+		STATUS		mandatory
+		DESCRIPTION		"System's software version"
+		::=  {  general  14  }
+	
+	sfSysMemCost    OBJECT-TYPE
+		SYNTAX		OCTET STRING
+		ACCESS		read-only
+		STATUS		mandatory
+		DESCRIPTION		"System's Memory cost"
+		::=  {  general  15	 }
+		
+	sfSysSwapCapacity    OBJECT-TYPE
+		SYNTAX		OCTET STRING
+		ACCESS		read-only
+		STATUS		mandatory
+		DESCRIPTION		"System's swap capacity"
+		::=  {  general  16	 }
+	
+	Memory	OBJECT IDENTIFIER
+		::=  { general  17 }
+	
+	sfSysMemBuffers      OBJECT-TYPE
+		SYNTAX		OCTET STRING
+		ACCESS		read-only
+		STATUS		mandatory
+		DESCRIPTION		"System's memory buffer"
+		::=  {  Memory  1 }
+		
+	sfSysMemCached      OBJECT-TYPE
+		SYNTAX		OCTET STRING
+		ACCESS		read-only
+		STATUS		mandatory
+		DESCRIPTION		"System's memory cached"
+		::=  {  Memory  2 }
+		
+	sfSysMemCost     OBJECT-TYPE
+		SYNTAX		OCTET STRING
+		ACCESS		read-only
+		STATUS		mandatory
+		DESCRIPTION		"System's memory cost"
+		::=  {  Memory  3 }
+		
+	sfSysMemFree     OBJECT-TYPE
+		SYNTAX		OCTET STRING
+		ACCESS		read-only
+		STATUS		mandatory
+		DESCRIPTION		"System's memory left"
+		::=  {  Memory  4 }
+		
+	sfSysMemTotal    OBJECT-TYPE
+		SYNTAX		OCTET STRING
+		ACCESS		read-only
+		STATUS		mandatory
+		DESCRIPTION		"System's total memory"
+		::=  {  Memory  5 }
+	
+	sfSysRunTime     OBJECT-TYPE
+		SYNTAX		OCTET STRING
+		ACCESS		read-only
+		STATUS		mandatory
+		DESCRIPTION		"System's runtime"
+		::=  { general  18 }	
+		
+	sfSysNetMask     OBJECT-TYPE
+		SYNTAX		OCTET STRING
+		ACCESS		read-only
+		STATUS		mandatory
+		DESCRIPTION		"System's NetMask"
+		::=  { general  19 }	
+	
+	
+	apinfo	OBJECT IDENTIFIER
+		::=  {  wac  1  }
+		
+		sfApOnlineNum 		OBJECT-TYPE                                                        
+			SYNTAX      	INTEGER                                      
+			ACCESS      	read-only                                                 
+			STATUS      	mandatory                                                      
+			DESCRIPTION "wac's online ap number"                          
+			::=  { apinfo  1 }
+		  
+		sfApOffNum 			OBJECT-TYPE                                                        
+			SYNTAX      	INTEGER                                      
+			ACCESS      	read-only                                                 
+			STATUS      	mandatory                                                      
+			DESCRIPTION "wac's offline ap number"                          
+			::=  { apinfo  2 }
+		  
+		sfApDepositNum 			OBJECT-TYPE                                                        
+			SYNTAX      		INTEGER                                      
+			ACCESS      		read-only                                                 
+			STATUS      		mandatory                                                      
+			DESCRIPTION "wac's deposit ap number"                          
+			::=  { apinfo  3 }
+	  
+		sfApTotalNum 			OBJECT-TYPE                                                        
+			SYNTAX      		INTEGER                                      
+			ACCESS      		read-only                                                 
+			STATUS      		mandatory                                                      
+			DESCRIPTION "wac's total connection number of ap"                          
+			::=  { apinfo  4 }
+			
+		sfApMaxCoNum 			OBJECT-TYPE                                                        
+			SYNTAX      		INTEGER                                      
+			ACCESS      		read-only                                                 
+			STATUS      		mandatory                                                      
+			DESCRIPTION "wac's max connection number of ap"                          
+			::=  { apinfo  5 }
+	
+		sfApInfoTable 			OBJECT-TYPE                                                        
+			SYNTAX      		SEQUENCE  OF  sfApInfoEntry                                      
+			ACCESS      		not-accessible                                                 
+			STATUS      		mandatory                                                      
+			DESCRIPTION "Table of each ap's info"                          
+			::=  { apinfo  6 }
+
+			sfApInfoEntry 			OBJECT-TYPE                                                        
+				SYNTAX      		sfApInfoEntry                                                    
+				ACCESS      		not-accessible                                              
+				STATUS      		mandatory                                                   
+				DESCRIPTION "entry of sfApInfoTable"
+				INDEX       		{  apIndex  }                                             
+				::=  { sfApInfoTable 1 } 
+
+			sfApInfoEntry  ::=  SEQUENCE {                                                
+				apIndex  				INTEGER, 
+				sfApName  				OCTET STRING,
+				sfApMAC  				OCTET STRING,
+				sfApStatus  			OCTET STRING,
+				sfApIP  				OCTET STRING, 
+				sfApMask  				OCTET STRING,
+				sfApModel       		OCTET STRING,
+				sfApSeriNum  			OCTET STRING,
+				sfApHardver  			OCTET STRING,
+				sfApSoftver  			OCTET STRING,
+				sfApCpuCost  			OCTET STRING,
+				sfApMemCost  			OCTET STRING,
+				sfApFlashCost  			OCTET STRING,
+				sfApOnlineTime  		OCTET STRING,
+				sfApRunTime  			OCTET STRING,
+				sfApIfNum				INTEGER,
+				sfApUsrNum				INTEGER,
+				sfApGroup				OCTET STRING,
+				sfSessionNum			INTEGER,
+				sfApSendRate			OCTET STRING,
+				sfApRecvRate			OCTET STRING
+			}
+	
+			apIndex   			OBJECT-TYPE 
+				SYNTAX          INTEGER                
+				ACCESS          not-accessible                 
+				STATUS          mandatory          
+				DESCRIPTION     "index of sfApInfoEntry" 
+				::=  {  sfApInfoEntry  1  }
+	
+			sfApName   			OBJECT-TYPE 
+				SYNTAX          OCTET STRING            
+				ACCESS          read-only        
+				STATUS          mandatory                  
+				DESCRIPTION     "AP's Name" 
+				::=  {  sfApInfoEntry  2  }
+				
+			sfApMAC   			OBJECT-TYPE 
+				SYNTAX          OCTET STRING            
+				ACCESS          read-only         
+				STATUS          mandatory             
+				DESCRIPTION     "AP's Mac"  
+				::=  {  sfApInfoEntry  3  }
+				
+			sfApStatus   		OBJECT-TYPE
+				SYNTAX          OCTET STRING            
+				ACCESS          read-only          
+				STATUS          mandatory               
+				DESCRIPTION     "AP's status" 
+				::=  {  sfApInfoEntry  4  }
+				
+			sfApIP   			OBJECT-TYPE 
+				SYNTAX          OCTET STRING        
+				ACCESS          read-only        
+				STATUS          mandatory          
+				DESCRIPTION     "AP's Ip"                                  
+				::=  {  sfApInfoEntry  5  }
+				
+			sfApMask   			OBJECT-TYPE 
+				SYNTAX          OCTET STRING      
+				ACCESS          read-only     
+				STATUS          mandatory      
+				DESCRIPTION     "AP's mask"
+				::=  {  sfApInfoEntry  6  }
+				
+			sfApModel   		OBJECT-TYPE 
+				SYNTAX          OCTET STRING         
+				ACCESS          read-only  
+				STATUS          mandatory     
+				DESCRIPTION     "AP's model" 
+				::=  {  sfApInfoEntry  7  }
+				
+			sfApSeriNum   		OBJECT-TYPE
+				SYNTAX          OCTET STRING
+				ACCESS          read-only 
+				STATUS          mandatory 
+				DESCRIPTION     "AP's serial number"
+				::=  {  sfApInfoEntry  8  }
+				
+			sfApHardver   		OBJECT-TYPE
+				SYNTAX          OCTET STRING         
+				ACCESS          read-only 
+				STATUS          mandatory
+				DESCRIPTION     "AP's hardware version"
+				::=  {  sfApInfoEntry  9  }
+				
+			sfApSoftver   		OBJECT-TYPE
+				SYNTAX          OCTET STRING 
+				ACCESS          read-only 
+				STATUS          mandatory       
+				DESCRIPTION     "AP's software version"
+				::=  {  sfApInfoEntry  10  }
+				
+			sfApCpuCost   		OBJECT-TYPE
+				SYNTAX          OCTET STRING
+				ACCESS          read-only 
+				STATUS          mandatory 
+				DESCRIPTION     "AP's cost of cpu"
+				::=  {  sfApInfoEntry  11  }
+	
+			sfApMemCost   		OBJECT-TYPE
+				SYNTAX          OCTET STRING
+				ACCESS          read-only
+				STATUS          mandatory   
+				DESCRIPTION     "AP's cost of memory" 
+				::=  {  sfApInfoEntry  12  }
+				
+			sfApFlashCost   	OBJECT-TYPE
+				SYNTAX          OCTET STRING
+				ACCESS          read-only
+				STATUS          mandatory  
+				DESCRIPTION     "AP's cost of flash"
+				::=  {  sfApInfoEntry  13  }
+	
+			sfApOnlineTime   	OBJECT-TYPE 
+				SYNTAX          OCTET STRING
+				ACCESS          read-only 
+				STATUS          mandatory 
+				DESCRIPTION     "AP's online time"
+				::=  {  sfApInfoEntry  14  }
+				
+			sfApRunTime   	OBJECT-TYPE 
+				SYNTAX          OCTET STRING
+				ACCESS          read-only
+				STATUS          mandatory
+				DESCRIPTION     "AP's RunTime"
+				::=  {  sfApInfoEntry  15  }
+				
+			sfApIfNum   	OBJECT-TYPE 
+				SYNTAX          INTEGER             
+				ACCESS          read-only               
+				STATUS          mandatory              
+				DESCRIPTION     "AP's IfNum" 
+				::=  {  sfApInfoEntry  16 }
+				
+			sfApUsrNum  	OBJECT-TYPE 
+				SYNTAX          INTEGER   
+				ACCESS          read-only          
+				STATUS          mandatory            
+				DESCRIPTION     "AP's sfApUsrNum"
+				::=  {  sfApInfoEntry  17 }
+				
+			sfApGroup  		OBJECT-TYPE
+				SYNTAX          OCTET STRING    
+				ACCESS          read-only 
+				STATUS          mandatory    
+				DESCRIPTION     "AP's Group" 
+				::=  {  sfApInfoEntry  18 }
+				
+			sfSessionNum 		OBJECT-TYPE       
+				SYNTAX          INTEGER
+				ACCESS          read-only  
+				STATUS          mandatory        
+				DESCRIPTION     "AP's session num"  
+				::=  {  sfApInfoEntry  19 }
+			
+			sfApSendRate 		OBJECT-TYPE       
+				SYNTAX          OCTET STRING 
+				ACCESS          read-only  
+				STATUS          mandatory        
+				DESCRIPTION     "AP's sendrate"  
+				::=  {  sfApInfoEntry  20 }
+				
+			sfApRecvRate 		OBJECT-TYPE       
+				SYNTAX          OCTET STRING 
+				ACCESS          read-only  
+				STATUS          mandatory        
+				DESCRIPTION     "AP's recvrate"  
+				::=  {  sfApInfoEntry  21 }
+			
+		sfApUsrInfoTable 			OBJECT-TYPE                                                        
+			SYNTAX      		SEQUENCE  OF  sfApUsrInfoEntry                                      
+			ACCESS      		not-accessible                                                 
+			STATUS      		mandatory                                                      
+			DESCRIPTION "Table of each ap's info"                          
+			::=  { apinfo  7 }
+
+			sfApUsrInfoEntry 			OBJECT-TYPE
+				SYNTAX      		sfApUsrInfoEntry 
+				ACCESS      		not-accessible 
+				STATUS      		mandatory  
+				DESCRIPTION "entry of sfApUsrInfoTable"
+				INDEX       		{  apIndex  } 
+				::=  { sfApUsrInfoTable 1 } 
+
+			sfApUsrInfoEntry  ::=  SEQUENCE {                                                
+				apIndex  				INTEGER, 
+				sfApName  				OCTET STRING,
+				sfApMAC  				OCTET STRING,
+				sfApUserOffAbnormal  	INTEGER,
+				sfApUserAssocTimes  	INTEGER,
+				sfApUserAssocFaTimes  	INTEGER,
+				sfApUserAssocSuTimes  	INTEGER,
+				sfApUserAssocReTimes  	INTEGER,
+				sfApUserAssocReSuTimes  INTEGER,
+				sfAPRecvFlux			OCTET STRING,
+				sfAPSendFlux			OCTET STRING
+			}
+	
+			apIndex   			OBJECT-TYPE     
+				SYNTAX          INTEGER  
+				ACCESS          not-accessible       
+				STATUS          mandatory 
+				DESCRIPTION     "index of sfApInfoEntry"                                  
+				::=  {  sfApUsrInfoEntry  1  }
+	
+			sfApName   			OBJECT-TYPE 
+				SYNTAX          OCTET STRING          
+				ACCESS          read-only    
+				STATUS          mandatory 
+				DESCRIPTION     "AP's Name" 
+				::=  {  sfApUsrInfoEntry  2  }
+				
+			sfApMAC   			OBJECT-TYPE 
+				SYNTAX          OCTET STRING 
+				ACCESS          read-only
+				STATUS          mandatory   
+				DESCRIPTION     "AP's Mac"
+				::=  {  sfApUsrInfoEntry  3  }
+			sfApUserOffAbnormal OBJECT-TYPE 
+				SYNTAX          INTEGER   
+				ACCESS          read-only         
+				STATUS          mandatory      
+				DESCRIPTION     "The num of  abnormal offline users on AP" 
+				::=  {  sfApUsrInfoEntry  4  }
+	
+			sfApUserAssocTimes  OBJECT-TYPE 
+				SYNTAX          INTEGER      
+				ACCESS          read-only 
+				STATUS          mandatory            
+				DESCRIPTION     "The associate times of sta on AP" 
+				::=  {  sfApUsrInfoEntry  5  }
+				
+			sfApUserAssocFaTimes   	OBJECT-TYPE
+				SYNTAX          	INTEGER   
+				ACCESS          	read-only     
+				STATUS          	mandatory              
+				DESCRIPTION     	"The failed associate times of sta on AP"                                
+				::=  {  sfApUsrInfoEntry  6  }
+				
+			sfApUserAssocSuTimes 	OBJECT-TYPE
+				SYNTAX          	INTEGER               
+				ACCESS          	read-only                 
+				STATUS          	mandatory               
+				DESCRIPTION     	"The sucess associate times of sta on AP"  
+				::=  {  sfApUsrInfoEntry  7  }
+	
+			sfApUserAssocReTimes  	OBJECT-TYPE 
+				SYNTAX          	INTEGER            
+				ACCESS          	read-only             
+				STATUS          	mandatory                
+				DESCRIPTION     	"The retry associate times of sta on AP"   
+				::=  {  sfApUsrInfoEntry  8  }
+				
+			sfApUserAssocReSuTimes   	OBJECT-TYPE 
+				SYNTAX          		INTEGER                
+				ACCESS         			read-only              
+				STATUS          		mandatory               
+				DESCRIPTION     		"The retry associate sucess times of sta on AP"      
+				::=  {  sfApUsrInfoEntry  9  }	
+
+			sfAPRecvFlux			   	OBJECT-TYPE 
+				SYNTAX          		OCTET STRING        
+				ACCESS         			read-only          
+				STATUS          		mandatory                
+				DESCRIPTION     		"ap received flux from 00:00 till now"  
+				::=  {  sfApUsrInfoEntry  10  }
+			
+			sfAPSendFlux			   	OBJECT-TYPE
+				SYNTAX          		OCTET STRING            
+				ACCESS         			read-only            
+				STATUS          		mandatory              
+				DESCRIPTION     		"ap send flux from 00:00 till now"
+				::=  {  sfApUsrInfoEntry  11  }
+				
+		sfRadioInfoTable 		OBJECT-TYPE                        
+			SYNTAX      		SEQUENCE  OF  sfRadioInfoEntry      
+			ACCESS      		not-accessible             
+			STATUS      		mandatory                 
+			DESCRIPTION "Table of each Radio's info" 
+			::=  { apinfo  8 }
+
+			sfRadioInfoEntry 			OBJECT-TYPE 
+				SYNTAX      			sfRadioInfoEntry 
+				ACCESS      			not-accessible
+				STATUS      			mandatory 
+				DESCRIPTION 			"entry of sfRadioInfoTable"
+				INDEX       		{  radioIndex  }                                             
+				::=  { sfRadioInfoTable 1 } 
+
+			sfRadioInfoEntry  ::=  SEQUENCE {                                                
+				rdioIndex  				INTEGER, 
+				sfAptype				OCTET STRING,
+				sfApName  				OCTET STRING,
+				sfApMAC  				OCTET STRING,
+				sfRadioMode				OCTET STRING,
+				sfRadioStatus			OCTET STRING,
+				sfRadioBeaconcycle  	OCTET STRING,
+				sfRadioDtim  	        OCTET STRING,
+				sfRadioRts  	        OCTET STRING,
+				sfRadiochannel  	    INTEGER,
+				sfRadioMaxTranPower  	OCTET STRING,
+				sfRadioMaxAcSta  	    INTEGER,
+				sfRadioFrequency  		OCTET STRING,
+				sfRadioSsid  			OCTET STRING,
+				sfRadioVlan				OCTET STRING,
+				sfRadioWorkMode			OCTET STRING,
+				sfRadioUseRate			OCTET STRING,
+				sfRadiotxPower			OCTET STRING,
+				sfRadioNoise			OCTET STRING,
+				sfIPAddr				OCTET STRING,
+				sfRadioRetryRate		OCTET STRING,
+				sfRadioCrcerrRate		OCTET STRING
+			}
+	
+			radioIndex   		OBJECT-TYPE                                                     
+				SYNTAX          INTEGER                                               
+				ACCESS          not-accessible                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "index of sfRadioInfoEntry"                                  
+				::=  {  sfRadioInfoEntry  1  }	
+
+			sfAptype   		OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                      
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "AP's name"                                  
+				::=  {  sfRadioInfoEntry  2  }
+
+			sfApName   		OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                                 
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "AP's name"                                  
+				::=  {  sfRadioInfoEntry  3  }
+				
+			sfApMAC   		OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                                 
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "AP's Mac"                                  
+				::=  {  sfRadioInfoEntry  4  }
+
+			sfRadioMode   		OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                                 
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "The mode of radio"                                  
+				::=  {  sfRadioInfoEntry  5 }
+				
+			sfRadioStatus   	OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                                 
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "The mode of radio"                                  
+				::=  {  sfRadioInfoEntry  6 }
+				
+			sfRadioBeaconcycle  OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                               
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "The beacon cycle of radio"                                   
+				::=  {  sfRadioInfoEntry  7  }	
+				
+			sfRadioDtim   		OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                               
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "The DTIM interval of radio"                                   
+				::=  {  sfRadioInfoEntry  8  }	
+				
+			sfRadioRts   		OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                               
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "The RTS threshold of radio"                                  
+				::=  {  sfRadioInfoEntry  9 }	
+				
+			sfRadiochannel   	OBJECT-TYPE                                                     
+				SYNTAX          INTEGER                                               
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "The channel of radio"                                  
+				::=  {  sfRadioInfoEntry  10 }	
+				
+			sfRadioMaxTranPower  OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                               
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "The maximum transmit power of radio"                                  
+				::=  {  sfRadioInfoEntry  11  }	
+				
+			sfRadioMaxAcSta   	OBJECT-TYPE                                                     
+				SYNTAX          INTEGER                                               
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "The maximum number of associated terminals"                                  
+				::=  {  sfRadioInfoEntry  12  }	
+				
+			sfRadioFrequency  	OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                               
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "Radio's Frequency"                                    
+				::=  {  sfRadioInfoEntry  13  }	
+				
+			sfRadioSsid   		OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                                
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "Radio's ssid"                                    
+				::=  {  sfRadioInfoEntry  14  }	
+				
+			sfRadioVlan   		OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                                
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "Radio's vlan"                                  
+				::=  {  sfRadioInfoEntry  15  }	
+
+			sfRadioWorkMode	   		OBJECT-TYPE 
+				SYNTAX          OCTET STRING   
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "Radio's work mode"                                  
+				::=  {  sfRadioInfoEntry  16  }	
+				
+			sfRadioUseRate	   		OBJECT-TYPE 
+				SYNTAX          OCTET STRING   
+				ACCESS          read-only      
+				STATUS          mandatory  
+				DESCRIPTION     "Radio's sfRadioUseRate" 
+				::=  {  sfRadioInfoEntry  17  }	
+				
+			sfRadiotxPower	   		OBJECT-TYPE 
+				SYNTAX          OCTET STRING   
+				ACCESS          read-only      
+				STATUS          mandatory  
+				DESCRIPTION     "Radio's sfRadiotxPower" 
+				::=  {  sfRadioInfoEntry  18  }	
+				
+			sfRadioNoise	   		OBJECT-TYPE 
+				SYNTAX          OCTET STRING   
+				ACCESS          read-only      
+				STATUS          mandatory  
+				DESCRIPTION     "Radio's sfRadioNoise" 
+				::=  {  sfRadioInfoEntry  19  }
+
+			sfIPAddr	   		OBJECT-TYPE 
+				SYNTAX          OCTET STRING   
+				ACCESS          read-only      
+				STATUS          mandatory  
+				DESCRIPTION     "Radio's sfIPAddr" 
+				::=  {  sfRadioInfoEntry  20  }
+
+			sfRadioRetryRate	   		OBJECT-TYPE 
+				SYNTAX          OCTET STRING   
+				ACCESS          read-only      
+				STATUS          mandatory  
+				DESCRIPTION     "Radio's retry rate" 
+				::=  {  sfRadioInfoEntry  21  }
+			
+			sfRadioCrcerrRate	   		OBJECT-TYPE 
+				SYNTAX          OCTET STRING   
+				ACCESS          read-only      
+				STATUS          mandatory  
+				DESCRIPTION     "Radio's crcerr rate" 
+				::=  {  sfRadioInfoEntry  22  }
+			
+		sfWirelessInfoTable 	OBJECT-TYPE                                                        
+			SYNTAX      		SEQUENCE  OF  sfWirelessInfoEntry                                      
+			ACCESS      		not-accessible                                                 
+			STATUS      		mandatory                                                      
+			DESCRIPTION "Table of each wireless port info"                          
+			::=  { apinfo  9 }
+
+			sfWirelessInfoEntry 		OBJECT-TYPE                                                        
+				SYNTAX      			sfWirelessInfoEntry                                                    
+				ACCESS      			not-accessible                                              
+				STATUS      			mandatory                                                   
+				DESCRIPTION 			"entry of sfWirelessInfoTable"
+				INDEX       		{  RadioIndex  }                                             
+				::=  { sfWirelessInfoTable 1 } 
+
+			sfWirelessInfoEntry  ::=  SEQUENCE {                                                
+				RadioIndex  				INTEGER, 
+				sfRadioDesc				OCTET STRING,
+				sfApName  				OCTET STRING,
+				sfApMAC  				OCTET STRING,
+				sfRadioMac				OCTET STRING,
+				sfRadioBw				OCTET STRING,
+				sfRadioStatus  	        OCTET STRING,
+				sfRadioRecvByte  		OCTET STRING,
+				sfRadioRecvErrPacket  	INTEGER,
+				sfRadioRecvPacket  		INTEGER,
+				sfRadioRecvUnicastPacket INTEGER,
+				sfRadioRecvBroadcastPacket INTEGER,
+				sfRadioDropRecvPacket 	INTEGER,
+				sfRadioSendByte  		OCTET STRING,
+				sfRadioSendErrPacket  	INTEGER,
+				sfRadioSendBroadcastPacket INTEGER,
+				sfRadioSendUnicastPacket INTEGER,
+				sfRadioDropSendPacket 	INTEGER,
+				sfRadioSendPacket  		INTEGER
+			}
+	
+			RadioIndex   		OBJECT-TYPE 
+				SYNTAX          INTEGER             
+				ACCESS          not-accessible                  
+				STATUS          mandatory              
+				DESCRIPTION     "The index of wireless port" 
+				::=  {  sfWirelessInfoEntry  1  }	
+				
+			sfRadioDesc   		OBJECT-TYPE 
+				SYNTAX          OCTET STRING           
+				ACCESS          read-only               
+				STATUS          mandatory                
+				DESCRIPTION     "The describe of wireless port" 
+				::=  {  sfWirelessInfoEntry  2  }
+				
+			sfApName   			OBJECT-TYPE  
+				SYNTAX          OCTET STRING          
+				ACCESS          read-only               
+				STATUS          mandatory                    
+				DESCRIPTION     "AP's name"      
+				::=  {  sfWirelessInfoEntry  3  }
+				
+			sfApMAC   			OBJECT-TYPE 
+				SYNTAX          OCTET STRING                
+				ACCESS          read-only                
+				STATUS          mandatory                    
+				DESCRIPTION     "AP's Mac"   
+				::=  {  sfWirelessInfoEntry  4  }
+				
+			sfRadioMac   		OBJECT-TYPE
+				SYNTAX          OCTET STRING                      
+				ACCESS          read-only                  
+				STATUS          mandatory                  
+				DESCRIPTION     "The mac of ap radio"   
+				::=  {  sfWirelessInfoEntry  5 }
+				
+			sfRadioBw  			OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                              
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "The bandwidth of wireless port"                                   
+				::=  {  sfWirelessInfoEntry  6  }	
+				
+			sfRadioStatus   		OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                              
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "The run status of wireless port"                                    
+				::=  {  sfWirelessInfoEntry  7  }	
+
+			sfRadioRecvByte   	OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                               
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "The bytes wireless port received"                                  
+				::=  {  sfWirelessInfoEntry  8  }	
+				
+			sfRadioRecvErrPacket OBJECT-TYPE                                                     
+				SYNTAX          INTEGER                                               
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "The error packets wireless port received"                                  
+				::=  {  sfWirelessInfoEntry  9  }	
+				
+			sfRadioRecvPacket  	OBJECT-TYPE                                                     
+				SYNTAX          INTEGER                                               
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "The packets wireless port received"                                   
+				::=  {  sfWirelessInfoEntry  10  }	
+				
+			sfRadioRecvUnicastPacket   	OBJECT-TYPE
+				SYNTAX          INTEGER
+				ACCESS          read-only
+				STATUS          mandatory  
+				DESCRIPTION     "The unicast packets wireless port received"                                 
+				::=  {  sfWirelessInfoEntry  11  }	
+
+			sfRadioRecvBroadcastPacket   	OBJECT-TYPE 
+				SYNTAX          INTEGER    
+				ACCESS          read-only     
+				STATUS          mandatory             
+				DESCRIPTION     "The broadcast packets wireless port received"                                 
+				::=  {  sfWirelessInfoEntry  12  }	
+				
+			sfRadioDropRecvPacket   		OBJECT-TYPE           
+				SYNTAX          INTEGER           
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION      "The recieved packets that wireless port droped "                                  
+				::=  {  sfWirelessInfoEntry  13  }	
+				
+			sfRadioSendByte   	OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING 
+				ACCESS          read-only  
+				STATUS          mandatory      
+				DESCRIPTION     "The bytes wireless port send" 
+				::=  {  sfWirelessInfoEntry  14 }	
+				
+			sfRadioSendErrPacket  OBJECT-TYPE 
+				SYNTAX          INTEGER           
+				ACCESS          read-only      
+				STATUS          mandatory   
+				DESCRIPTION     "The error packets wireless port send"                                 
+				::=  {  sfWirelessInfoEntry  15  }	
+
+			sfRadioSendBroadcastPacket  OBJECT-TYPE 
+				SYNTAX          INTEGER    
+				ACCESS          read-only  
+				STATUS          mandatory             
+				DESCRIPTION     "The unicast packets wireless port send"                                   
+				::=  {  sfWirelessInfoEntry  16  }	
+				
+			sfRadioSendUnicastPacket  OBJECT-TYPE
+				SYNTAX          INTEGER
+				ACCESS          read-only 
+				STATUS          mandatory     
+				DESCRIPTION     "The unicast packets wireless port send"                                   
+				::=  {  sfWirelessInfoEntry  17  }	
+				
+			sfRadioDropSendPacket   	OBJECT-TYPE 
+				SYNTAX          	INTEGER 
+				ACCESS          	read-only
+				STATUS          	mandatory 
+				DESCRIPTION     	"The send packets wireless port drop"                                   
+				::=  {  sfWirelessInfoEntry  18  }	
+				
+			sfRadioSendPacket  	OBJECT-TYPE 
+				SYNTAX          	INTEGER
+				ACCESS          	read-only
+				STATUS          	mandatory
+				DESCRIPTION     	"The send packets of wireless port " 
+				::=  {  sfWirelessInfoEntry  19  }	
+				
+		sfWiredInfoTable 	OBJECT-TYPE                                                        
+			SYNTAX      		SEQUENCE  OF  sfWiredInfoEntry                                      
+			ACCESS      		not-accessible                                                 
+			STATUS      		mandatory                                                      
+			DESCRIPTION "Table of each wired port info"                          
+			::=  { apinfo  10 }
+
+			sfWiredInfoEntry 		OBJECT-TYPE                                                        
+				SYNTAX      			sfWiredInfoEntry                                                    
+				ACCESS      			not-accessible                                              
+				STATUS      			mandatory                                                   
+				DESCRIPTION 			"entry of sfWiredInfoTable"
+				INDEX       		{  portIndex  }                                             
+				::=  { sfWiredInfoTable 1 } 
+
+			sfWiredInfoEntry  ::=  SEQUENCE {                                                
+				portIndex  					INTEGER, 
+				sfPortDesc					OCTET STRING,
+				sfApName  					OCTET STRING,
+				sfApMAC  					OCTET STRING,
+				sfApHardVer  				OCTET STRING,
+				sfPortMac					OCTET STRING,
+				sfPortBw					OCTET STRING,
+				sfPortStatus  	        	OCTET STRING,
+				sfPortRecvByte  			OCTET STRING,
+				sfPortRecvErrPacket  		INTEGER,
+				sfPortRecvPacket  			INTEGER,
+				sfPortRecvUnicastPacket 	INTEGER,
+				sfPortRecvBroadcastPacket 	INTEGER,
+				sfPortDropRecvPacket 		INTEGER,
+				sfPortSendByte  			OCTET STRING,
+				sfPortSendErrPacket  		INTEGER,
+				sfPortSendUnicastPacket 	INTEGER,
+				sfPortSendBroadcastPacket 	INTEGER,
+				sfPortDropSendPacket 		INTEGER,
+				sfPortSendPackets			INTEGER
+			}
+	
+			portIndex   		OBJECT-TYPE                                                     
+				SYNTAX          INTEGER                                               
+				ACCESS          not-accessible                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "The index of wired port"                                  
+				::=  {  sfWiredInfoEntry  1  }	
+				
+			sfPortDesc   		OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                                 
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "The describe of wired port"                                  
+				::=  {  sfWiredInfoEntry  2  }
+				
+			sfApName   			OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                                 
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "AP's name"                                  
+				::=  {  sfWiredInfoEntry  3  }
+				
+			sfApMAC   			OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                                 
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "AP's Mac"                                  
+				::=  {  sfWiredInfoEntry  4  }
+				
+			sfApHardVer   		OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                                 
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "AP's hard version"                                  
+				::=  {  sfWiredInfoEntry  5  }	
+				
+			sfPortMac   		OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                                 
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "The mac of wired port"                                  
+				::=  {  sfWiredInfoEntry  6 }
+				
+			sfPortBw  			OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                              
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "The bandwidth of wired port"                                   
+				::=  {  sfWiredInfoEntry  7  }	
+				
+			sfPortStatus   		OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                              
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "The run status of wired port"                                    
+				::=  {  sfWiredInfoEntry  8  }	
+
+			sfPortRecvByte   	OBJECT-TYPE                                                     
+				SYNTAX          INTEGER                                               
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "The bytes wired port received"                                  
+				::=  {  sfWiredInfoEntry  9 }	
+				
+			sfPortRecvErrPacket OBJECT-TYPE                                                     
+				SYNTAX          INTEGER                                               
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "The error packets wired port received"                                  
+				::=  {  sfWiredInfoEntry  10  }	
+				
+			sfPortRecvPacket  	OBJECT-TYPE                                                     
+				SYNTAX          INTEGER                                               
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "The packets wired port received"                                   
+				::=  {  sfWiredInfoEntry  11  }	
+				
+			sfPortRecvUnicastPacket   	OBJECT-TYPE                                                     
+				SYNTAX          		INTEGER                                               
+				ACCESS          		read-only                                          
+				STATUS          		mandatory                                               
+				DESCRIPTION     		"The unicast packets wired port received"                                 
+				::=  {  sfWiredInfoEntry  12  }	
+				
+			sfPortRecvBroadcastPacket   OBJECT-TYPE                                                     
+				SYNTAX          		INTEGER                                               
+				ACCESS          		read-only                                          
+				STATUS          		mandatory                                               
+				DESCRIPTION     		"The Broadcast packets wired port received"                                 
+				::=  {  sfWiredInfoEntry  13  }					
+
+			sfPortDropRecvPacket   		OBJECT-TYPE                                                     
+				SYNTAX          INTEGER                                               
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION      "The recieved packets wired port droped"                                  
+				::=  {  sfWiredInfoEntry  14  }	
+				
+			sfPortSendByte   	OBJECT-TYPE                                                     
+				SYNTAX          INTEGER                                               
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "The bytes wired port send"                                 
+				::=  {  sfWiredInfoEntry  15 }	
+				
+			sfPortSendErrPacket  OBJECT-TYPE                                                     
+				SYNTAX          INTEGER                                               
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "The error packets wired port send"                                 
+				::=  {  sfWiredInfoEntry  16  }	
+
+			sfPortSendUnicastPacket OBJECT-TYPE                                                     
+				SYNTAX          	INTEGER                                               
+				ACCESS          	read-only                                          
+				STATUS          	mandatory                                               
+				DESCRIPTION     	"The unicast packets wired port send"                                   
+				::=  {  sfWiredInfoEntry  17 }	
+				
+			sfPortSendBroadcastPacket   OBJECT-TYPE                                                     
+				SYNTAX          		INTEGER                                               
+				ACCESS          		read-only                                          
+				STATUS          		mandatory                                               
+				DESCRIPTION     		"The Broadcast packets wired port send"                                   
+				::=  {  sfWiredInfoEntry  18  }	
+				
+			sfPortDropSendPacket   	OBJECT-TYPE 
+				SYNTAX          INTEGER
+				ACCESS          read-only
+				STATUS          mandatory
+				DESCRIPTION     "The send packets wired port droped"                                   
+				::=  {  sfWiredInfoEntry  19  }	
+				
+			sfPortSendPacket   	OBJECT-TYPE 
+				SYNTAX          INTEGER
+				ACCESS          read-only
+				STATUS          mandatory
+				DESCRIPTION     "The send packets wired port droped"                                   
+				::=  {  sfWiredInfoEntry  20  }		
+	  
+	userinfo	OBJECT IDENTIFIER
+		::=  {  wac  2  }
+		
+		sfUserNum 			OBJECT-TYPE                                                        
+			SYNTAX      	INTEGER                                      
+			ACCESS      	read-only                                                 
+			STATUS      	mandatory                                                      
+			DESCRIPTION 	"wac's online user number"                          
+			::=  { userinfo  1 }
+		  
+		sfMaxUserNum 		OBJECT-TYPE                                                        
+			SYNTAX      	INTEGER                                      
+			ACCESS      	read-only                                                 
+			STATUS      	mandatory                                                      
+			DESCRIPTION 	"wac's Max online user number"                          
+			::=  { userinfo  2 }
+		
+		sfUserInfoTable 	OBJECT-TYPE                                                        
+			SYNTAX      		SEQUENCE  OF  sfUserInfoEntry                                      
+			ACCESS      		not-accessible                                                
+			STATUS      		mandatory                                                      
+			DESCRIPTION "Table of each user detailed info"                          
+			::=  { userinfo  3 }
+
+			sfUserInfoEntry 			OBJECT-TYPE                                                        
+				SYNTAX      			sfUserInfoEntry                                                    
+				ACCESS      			not-accessible                                              
+				STATUS      			mandatory                                                   
+				DESCRIPTION 			"entry of sfUserInfoTable"
+				INDEX       		{  UserIndex  }                                             
+				::=  { sfUserInfoTable 1 } 
+
+			sfUserInfoEntry  ::=  SEQUENCE {                                                
+				UserIndex  					INTEGER, 
+				sfUserName					OCTET STRING,
+				sfStaMac 					OCTET STRING,
+				sfStaIp  					OCTET STRING,
+				sfStaApMac					OCTET STRING,
+				sfStaRssi					OCTET STRING,
+				sfStaType  	        		OCTET STRING,
+				sfStaNoise  				OCTET STRING,
+				sfStaChannel  				INTEGER,
+				sfStaVlanId  				INTEGER,
+				sfStaSsid 					OCTET STRING,
+				sfStaMode 					OCTET STRING,
+				sfOnlineTime 				OCTET STRING,
+				sfStaRecvRate 				OCTET STRING,
+				sfStaSendRate 				OCTET STRING,
+				sfRetryRate  				OCTET STRING,
+				sfErrRate					OCTET STRING
+			}
+	
+			UserIndex     		OBJECT-TYPE                                                     
+				SYNTAX          INTEGER                                               
+				ACCESS          not-accessible                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "The index of user info table"                                  
+				::=  {  sfUserInfoEntry  1  }	
+				
+			sfUserName   		OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                                 
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "The name of user"                                  
+				::=  {  sfUserInfoEntry  2  }
+				
+			sfStaMac    		OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                                 
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "Sta's mac"                                  
+				::=  {  sfUserInfoEntry  3  }
+				
+			sfStaIp    			OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                                 
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "Sta's ip"                                  
+				::=  {  sfUserInfoEntry  4  }
+				
+			sfStaApMac   		OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                                 
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "The mac of ap that sta access"                                  
+				::=  {  sfUserInfoEntry  5 }
+				
+			sfStaRssi  			OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                              
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "Sta's rssis"                                   
+				::=  {  sfUserInfoEntry  6  }	
+				
+			sfStaType     		OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                              
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "Sta's type"                                    
+				::=  {  sfUserInfoEntry  7  }	
+
+			sfStaNoise     		OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                                
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "Sta's noise"                                  
+				::=  {  sfUserInfoEntry  8  }	
+				
+			sfStaChannel   		OBJECT-TYPE                                                     
+				SYNTAX          INTEGER                                               
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "Sta's channel"                                  
+				::=  {  sfUserInfoEntry  9  }	
+				
+			sfStaVlanId  		OBJECT-TYPE                                                     
+				SYNTAX          INTEGER                                               
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "Sta's vlan id"                                   
+				::=  {  sfUserInfoEntry  10  }	
+				
+			sfStaSsid    				OBJECT-TYPE                                                     
+				SYNTAX          		OCTET STRING                                               
+				ACCESS          		read-only                                          
+				STATUS          		mandatory                                               
+				DESCRIPTION     		"Sta's SSID"                                
+				::=  {  sfUserInfoEntry  11  }	
+				
+			sfStaMode   				OBJECT-TYPE                                                     
+				SYNTAX          		OCTET STRING                                               
+				ACCESS          		read-only                                          
+				STATUS          		mandatory                                               
+				DESCRIPTION     		"Sta's mode"                                 
+				::=  {  sfUserInfoEntry  12  }					
+
+			sfOnlineTime    	OBJECT-TYPE                                                     
+				SYNTAX          OCTET STRING                                               
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION      "online time of sta"                                  
+				::=  {  sfUserInfoEntry  13  }	
+				
+			sfStaRecvRate     			OBJECT-TYPE                                                     
+				SYNTAX          		OCTET STRING                                               
+				ACCESS          		read-only                                          
+				STATUS          		mandatory                                               
+				DESCRIPTION     		"Sta's recieve rate"                                
+				::=  {  sfUserInfoEntry  14  }	
+				
+			sfStaSendRate    			OBJECT-TYPE                                                     
+				SYNTAX          		OCTET STRING                                               
+				ACCESS          		read-only                                          
+				STATUS          		mandatory                                               
+				DESCRIPTION     		"Sta's send rate"                                  
+				::=  {  sfUserInfoEntry  15  }
+				
+			sfRetryRate     			OBJECT-TYPE                                                     
+				SYNTAX          		OCTET STRING                                               
+				ACCESS          		read-only                                          
+				STATUS          		mandatory                                               
+				DESCRIPTION     		"Sta's RetryRate "                                  
+				::=  {  sfUserInfoEntry  16  }
+				
+			sfErrRate     			OBJECT-TYPE                                                     
+				SYNTAX          		OCTET STRING                                               
+				ACCESS          		read-only                                          
+				STATUS          		mandatory                                               
+				DESCRIPTION     		"Sta's ErrRate "                                  
+				::=  {  sfUserInfoEntry  17  }
+
+		sfUserFlowInfoTable 	OBJECT-TYPE                                                        
+			SYNTAX      		SEQUENCE  OF  sfUserFlowInfoEntry                                      
+			ACCESS      		not-accessible                                                
+			STATUS      		mandatory                                                      
+			DESCRIPTION "Table of each user detailed info"                          
+			::=  { userinfo  4 }
+
+			sfUserFlowInfoEntry 			OBJECT-TYPE                                                        
+				SYNTAX      			sfUserFlowInfoEntry                                                    
+				ACCESS      			not-accessible                                              
+				STATUS      			mandatory                                                   
+				DESCRIPTION 			"entry of sfUserInfoTable"
+				INDEX       		{  UserIndex  }                                             
+				::=  { sfUserFlowInfoTable 1 } 
+
+			sfUserFlowInfoEntry  ::=  SEQUENCE {                                                
+				UserIndex  					INTEGER, 
+				sfStaMac 					OCTET STRING,
+				sfStaSendPks  				INTEGER,
+				sfStaRecvPks  				INTEGER,
+				sfStaDropRecvPks  			INTEGER,
+				sfStaDropSendPks  			INTEGER,
+				sfStaSendBytes 				OCTET STRING,
+				sfStaRecvBytes 				OCTET STRING,
+				sfStaRecvErrPks  			INTEGER,
+				sfStaSendErrPks  			INTEGER,
+				sfStaRetryPks  				INTEGER,
+				sfStaRetryByte				OCTET STRING,
+			}
+	
+			UserIndex     		OBJECT-TYPE 
+				SYNTAX          INTEGER                  
+				ACCESS          not-accessible                  
+				STATUS          mandatory                   
+				DESCRIPTION     "The index of user info table"                                  
+				::=  {  sfUserFlowInfoEntry  1  }	
+				
+			sfStaMac    		OBJECT-TYPE 
+				SYNTAX          OCTET STRING                        
+				ACCESS          read-only                    
+				STATUS          mandatory                           
+				DESCRIPTION     "Sta's mac" 
+				::=  {  sfUserFlowInfoEntry  2  }
+					
+			sfStaSendPks    	OBJECT-TYPE                                                     
+				SYNTAX          INTEGER                                               
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "packages that sta send"                                 
+				::=  {  sfUserFlowInfoEntry  3  }	
+				
+			sfStaRecvPks   		OBJECT-TYPE 
+				SYNTAX          INTEGER                      
+				ACCESS          read-only                   
+				STATUS          mandatory                       
+				DESCRIPTION     "packages that sta recieve"          
+				::=  {  sfUserFlowInfoEntry  4  }	
+				
+			sfStaDropRecvPks    OBJECT-TYPE                                                     
+				SYNTAX          INTEGER                                               
+				ACCESS          read-only                                          
+				STATUS          mandatory                                               
+				DESCRIPTION     "the recieve packages that sta droped"                                   
+				::=  {  sfUserFlowInfoEntry  5  }					
+
+			sfStaDropSendPks 		OBJECT-TYPE                                                     
+				SYNTAX          	OCTET STRING              
+				ACCESS          	read-only                 
+				STATUS          	mandatory                 
+				DESCRIPTION     	"the send packages that sta droped"    
+				::=  {  sfUserFlowInfoEntry  6  }	
+						
+			sfStaSendBytes   			OBJECT-TYPE 
+				SYNTAX          		OCTET STRING               
+				ACCESS          		read-only             
+				STATUS          		mandatory                     
+				DESCRIPTION     		"Byte that sta recieve"      
+				::=  {  sfUserFlowInfoEntry 7  }	
+				
+			sfStaRecvBytes    			OBJECT-TYPE 
+				SYNTAX          		OCTET STRING                
+				ACCESS          		read-only                 
+				STATUS          		mandatory                    
+				DESCRIPTION     		"Byte that sta recieve"                                
+				::=  {  sfUserFlowInfoEntry  8  }
+					
+			sfStaRecvErrPks			    OBJECT-TYPE
+				SYNTAX          		INTEGER                  
+				ACCESS          		read-only                   
+				STATUS          		mandatory                   
+				DESCRIPTION     		"error packages that sta recieve" 
+				::=  {  sfUserFlowInfoEntry  9  }	
+				
+			sfStaSendErrPks     OBJECT-TYPE
+				SYNTAX          INTEGER
+				ACCESS          read-only
+				STATUS          mandatory             
+				DESCRIPTION     "error packages that sta send" 
+				::=  {  sfUserFlowInfoEntry  10  }			
+
+			sfStaRetryPks       OBJECT-TYPE    
+				SYNTAX          INTEGER    
+				ACCESS          read-only 
+				STATUS          mandatory 
+				DESCRIPTION     "packages that sta retransmission"
+				::=  {  sfUserFlowInfoEntry  11  }	
+				
+			sfStaRetryByte      OBJECT-TYPE
+				SYNTAX          OCTET STRING
+				ACCESS          read-only 
+				STATUS          mandatory              
+				DESCRIPTION     "bytes that sta retransmission"                                    
+				::=  {  sfUserFlowInfoEntry  12  }				
+				
+	sfInterfaceTable 		OBJECT-TYPE                                                        
+		SYNTAX      		SEQUENCE  OF  sfInterfaceEntry                                      
+		ACCESS      		not-accessible                                                 
+		STATUS      		mandatory                                                      
+		DESCRIPTION "Table of each interface info of wac"                          
+		::=  { wac 3 }
+
+		sfInterfaceEntry 			OBJECT-TYPE                                                        
+			SYNTAX      			sfInterfaceEntry 
+			ACCESS      			not-accessible                                              
+			STATUS      			mandatory                                                   
+			DESCRIPTION 			"entry of sfInterfaceTable"
+			INDEX       		{  IfIndex  }                                             
+			::=  { sfInterfaceTable 1 } 
+
+		sfInterfaceEntry  ::=  SEQUENCE {                                                
+			IfIndex  					INTEGER, 
+			sfIfDesc					OCTET STRING,
+			sfIfType 					OCTET STRING,
+			sfIfMtu  					INTEGER,
+			sfIfBandwidth				OCTET STRING,
+			sfIfMac						OCTET STRING,
+			sfIfStatus  	        	OCTET STRING,
+			sfIfRecvByte  				OCTET STRING,
+			sfIfDropRecvPacket 			INTEGER,
+			sfIfRecvErrPacket 			INTEGER,
+			sfIfSendByte  				OCTET STRING,
+			sfIfDropSendPacket 			INTEGER,
+			sfIfSendErrPacket 			INTEGER,
+			sfIfUpDownTimes 			INTEGER,
+		}
+
+		IfIndex       		OBJECT-TYPE                                                     
+			SYNTAX          INTEGER                                               
+			ACCESS          not-accessible                                         
+			STATUS          mandatory                                               
+			DESCRIPTION     "The index of interface info table"                                  
+			::=  {  sfInterfaceEntry  1  }	
+			
+		sfIfDesc   			OBJECT-TYPE                                                     
+			SYNTAX          OCTET STRING                                                 
+			ACCESS          read-only                                          
+			STATUS          mandatory                                               
+			DESCRIPTION     "describe of interface"                                  
+			::=  {  sfInterfaceEntry  2  }
+			
+		sfIfType     		OBJECT-TYPE                                                     
+			SYNTAX          OCTET STRING                                                 
+			ACCESS          read-only                                          
+			STATUS          mandatory                                               
+			DESCRIPTION     "type of interface"                                  
+			::=  {  sfInterfaceEntry  3  }
+			
+		sfIfMtu      		OBJECT-TYPE                                                     
+			SYNTAX          INTEGER                                                 
+			ACCESS          read-only                                          
+			STATUS          mandatory                                               
+			DESCRIPTION     "MTU of interface"                                 
+			::=  {  sfInterfaceEntry  4  }
+			
+		sfIfBandwidth   	OBJECT-TYPE                                                     
+			SYNTAX          OCTET STRING                                                 
+			ACCESS          read-only                                          
+			STATUS          mandatory                                               
+			DESCRIPTION     "Bandwidth if interface"                                  
+			::=  {  sfInterfaceEntry  5 }
+			
+		sfIfMac  			OBJECT-TYPE                                                     
+			SYNTAX          OCTET STRING                                              
+			ACCESS          read-only                                          
+			STATUS          mandatory                                               
+			DESCRIPTION     "interface's mac"                                   
+			::=  {  sfInterfaceEntry  6  }	
+			
+		sfIfStatus       	OBJECT-TYPE                                                     
+			SYNTAX          OCTET STRING                                              
+			ACCESS          read-only                                          
+			STATUS          mandatory                                               
+			DESCRIPTION     "interface's status"                                    
+			::=  {  sfInterfaceEntry  7  }	
+			
+		sfIfRecvByte  		OBJECT-TYPE                                                     
+			SYNTAX          OCTET STRING                                              
+			ACCESS          read-only                                          
+			STATUS          mandatory                                               
+			DESCRIPTION     "The bytes that interface received"                                   
+			::=  {  sfInterfaceEntry  8  }	
+			
+		sfIfDropRecvPacket     		OBJECT-TYPE                                                     
+			SYNTAX          		INTEGER                                              
+			ACCESS          		read-only                                          
+			STATUS          		mandatory                                               
+			DESCRIPTION     		"The recieve packets that interface dorped"                                
+			::=  {  sfInterfaceEntry  9  }	
+			
+		sfIfRecvErrPacket    		OBJECT-TYPE                                                     
+			SYNTAX          		INTEGER                                              
+			ACCESS          		read-only                                          
+			STATUS          		mandatory                                               
+			DESCRIPTION     		"The error packets that interface recieve"                                 
+			::=  {  sfInterfaceEntry  10  }					
+			
+		sfIfSendByte    	OBJECT-TYPE                                                     
+			SYNTAX          OCTET STRING                                              
+			ACCESS          read-only                                          
+			STATUS          mandatory                                               
+			DESCRIPTION     "The bytes that interface send"                                   
+			::=  {  sfInterfaceEntry  11  }	
+			
+		sfIfDropSendPacket      	OBJECT-TYPE                                                     
+			SYNTAX          		INTEGER                                              
+			ACCESS          		read-only                                          
+			STATUS          		mandatory                                               
+			DESCRIPTION     		"The send packets that interface dorped"                                
+			::=  {  sfInterfaceEntry  12  }	
+			
+		sfIfSendErrPacket     		OBJECT-TYPE                                                     
+			SYNTAX          		INTEGER                                              
+			ACCESS          		read-only                                    
+			STATUS          		mandatory                                               
+			DESCRIPTION     		"The error packets that interface send"                                 
+			::=  {  sfInterfaceEntry  13  }		
+			
+		sfIfUpDownTimes     		OBJECT-TYPE                                                     
+			SYNTAX          		INTEGER                                               
+			ACCESS          		read-only                                          
+			STATUS          		mandatory                                               
+			DESCRIPTION     		"times that interface up and down"                                  
+			::=  {  sfInterfaceEntry  14  }
+			
+	sfSsidConfTable 		OBJECT-TYPE                                                        
+		SYNTAX      		SEQUENCE  OF  sfSsidConfEntry                                      
+		ACCESS      		not-accessible                                                
+		STATUS      		mandatory                                                      
+		DESCRIPTION "Table of each ssid conf info of wac"                          
+		::=  { wac 4 }
+
+		sfSsidConfEntry 			OBJECT-TYPE                                                        
+			SYNTAX      			sfSsidConfEntry                                                    
+			ACCESS      			not-accessible                                              
+			STATUS      			mandatory                                                   
+			DESCRIPTION 			"entry of sfSsidConfTable"
+			INDEX       		{  SsidIndex  }                                             
+			::=  { sfSsidConfTable 1 } 
+
+		sfSsidConfEntry  ::=  SEQUENCE {                                                
+			SsidIndex  					INTEGER, 
+			sfSsidName					OCTET STRING,
+			sfSsidEnable 				OCTET STRING,
+			sfSsidIsHide  				OCTET STRING,
+			sfSsidIsolateUser			OCTET STRING,
+			sfSsidAuthMode				OCTET STRING,
+			sfSsidSecurityType  	    OCTET STRING,
+			sfSsidAuthType				OCTET STRING,
+			sfSsidEncryType				OCTET STRING,
+			sfSsidVlanId  				OCTET STRING,
+			sfSsidMaxStaNum  			INTEGER,
+			sfSsidStaMaxSendRate  		OCTET STRING,
+			sfSsidStaMaxRecvRate  		OCTET STRING,
+			sfSsidSendRate				OCTET STRING,
+			sfSsidRecvRate				OCTET STRING,
+			sfSsidUsrNum				INTEGER
+		}
+
+		SsidIndex       	OBJECT-TYPE                                                     
+			SYNTAX          INTEGER                                               
+			ACCESS          not-accessible                                          
+			STATUS          mandatory                                               
+			DESCRIPTION     "The index of ssid conf info table"                                  
+			::=  {  sfSsidConfEntry  1  }	
+			
+		sfSsidName   			OBJECT-TYPE                                                     
+			SYNTAX          OCTET STRING                                                 
+			ACCESS          read-only                                          
+			STATUS          mandatory                                               
+			DESCRIPTION     "ssid's name"                                  
+			::=  {  sfSsidConfEntry  2  }
+			
+		sfSsidEnable      	OBJECT-TYPE                                                     
+			SYNTAX          OCTET STRING                                                 
+			ACCESS          read-only                                          
+			STATUS          mandatory                                               
+			DESCRIPTION     "Is ssid enable"                                  
+			::=  {  sfSsidConfEntry  3  }
+			
+		sfSsidIsHide        OBJECT-TYPE                                                     
+			SYNTAX          OCTET STRING                                                 
+			ACCESS          read-only                                          
+			STATUS          mandatory                                               
+			DESCRIPTION     "Is the ssid hidden"                                 
+			::=  {  sfSsidConfEntry  4  }
+			
+		sfSsidIsolateUser   OBJECT-TYPE                                                     
+			SYNTAX          OCTET STRING                                                 
+			ACCESS          read-only                                          
+			STATUS          mandatory                                               
+			DESCRIPTION     "Is ssid open the terminal isolation function"                                  
+			::=  {  sfSsidConfEntry  5 }
+			
+		sfSsidAuthMode  	OBJECT-TYPE                                                     
+			SYNTAX          OCTET STRING                                              
+			ACCESS          read-only                                          
+			STATUS          mandatory                                               
+			DESCRIPTION     "8021.x Auth mode of ssid"                                   
+			::=  {  sfSsidConfEntry  6  }	
+			
+		sfSsidSecurityType  OBJECT-TYPE                                                     
+			SYNTAX          OCTET STRING                                              
+			ACCESS          read-only                                          
+			STATUS          mandatory                                               
+			DESCRIPTION     "Security type of ssid"                                     
+			::=  {  sfSsidConfEntry  7  }	
+
+		sfSsidAuthType   		OBJECT-TYPE                                                     
+			SYNTAX         		OCTET STRING                                                
+			ACCESS          	read-only                                          
+			STATUS          	mandatory                                               
+			DESCRIPTION     	"Auth type of ssid"                                 
+			::=  {  sfSsidConfEntry  8  }	
+			
+		sfSsidEncryType 		OBJECT-TYPE                                                     
+			SYNTAX          	OCTET STRING                                               
+			ACCESS          	read-only                                          
+			STATUS          	mandatory                                               
+			DESCRIPTION     	"Encry type of ssid"                                   
+			::=  {  sfSsidConfEntry  9  }	
+			
+		sfSsidVlanId    	OBJECT-TYPE                                                     
+			SYNTAX          OCTET STRING                                              
+			ACCESS          read-only                                          
+			STATUS          mandatory                                               
+			DESCRIPTION     "ssid's vlan id"                                   
+			::=  {  sfSsidConfEntry  10  }	
+			
+		sfSsidMaxStaNum       		OBJECT-TYPE                                                     
+			SYNTAX          		INTEGER                                              
+			ACCESS          		read-only                                          
+			STATUS          		mandatory                                               
+			DESCRIPTION     		"Maximum number of terminals supported by SSID"                                
+			::=  {  sfSsidConfEntry  11  }	
+			
+		sfSsidStaMaxSendRate      	OBJECT-TYPE                                                     
+			SYNTAX          		OCTET STRING                                              
+			ACCESS          		read-only                                          
+			STATUS          		mandatory                                               
+			DESCRIPTION     		"Maximum send rate of SSID"                                 
+			::=  {  sfSsidConfEntry  12  }					
+
+		sfSsidStaMaxRecvRate      OBJECT-TYPE                                                     
+			SYNTAX         		  OCTET STRING                                                
+			ACCESS          	  read-only                                          
+			STATUS          	  mandatory                                               
+			DESCRIPTION     	  "Maximum recieve rate of SSID"                                   
+			::=  {  sfSsidConfEntry  13  }
+			
+		sfSsidSendRate      OBJECT-TYPE 
+			SYNTAX         		  OCTET STRING 
+			ACCESS          	  read-only                                          
+			STATUS          	  mandatory 
+			DESCRIPTION     	  "send rate of SSID" 
+			::=  {  sfSsidConfEntry  14  }
+		
+		sfSsidRecvRate      OBJECT-TYPE 
+			SYNTAX         		  OCTET STRING 
+			ACCESS          	  read-only                                          
+			STATUS          	  mandatory 
+			DESCRIPTION     	  "recv rate of SSID" 
+			::=  {  sfSsidConfEntry  15  }
+			
+		sfSsidUsrNum      OBJECT-TYPE 
+			SYNTAX         		  INTEGER
+			ACCESS          	  read-only                                          
+			STATUS          	  mandatory 
+			DESCRIPTION     	  "user num of SSID" 
+			::=  {  sfSsidConfEntry  16  }
+			
+		
+	sfSsidFlowTable 		OBJECT-TYPE                                                        
+		SYNTAX      		SEQUENCE  OF  sfSsidFlowEntry                                      
+		ACCESS      		not-accessible                                                 
+		STATUS      		mandatory                                                      
+		DESCRIPTION "Table of each ssid flow info of wac"                          
+		::=  { wac 5 }
+
+		sfSsidFlowEntry 			OBJECT-TYPE                                                        
+			SYNTAX      			sfSsidFlowEntry                                                    
+			ACCESS      			not-accessible                                              
+			STATUS      			mandatory                                                   
+			DESCRIPTION 			"entry of sfSsidFlowTable"
+			INDEX       		{  SsidIndex  }                                             
+			::=  { sfSsidFlowTable 1 } 
+
+		sfSsidFlowEntry  ::=  SEQUENCE {                                                
+			SsidIndex  					INTEGER, 
+			sfSsidName					OCTET STRING,
+			sfSsidRecvByte 				OCTET STRING,
+			sfSsidRecvErrPacket  		INTEGER,
+			sfSsidRecvPacket			INTEGER,
+			sfSsidRecvUnicastPacket		INTEGER,
+			sfSsidRecvBroadcastPacket	INTEGER,
+			sfSsidDropRecvPacket		INTEGER,
+			sfSsidSendByte 				OCTET STRING,
+			sfSsidSendErrPacket  		INTEGER,
+			sfSsidSendPacket			INTEGER,
+			sfSsidSendUnicastPacket		INTEGER,
+			sfSsidDropSendPacket		INTEGER,
+			sfSsidSendBroadcastPacket	INTEGER
+		}
+
+		SsidIndex       	OBJECT-TYPE                                                     
+			SYNTAX          INTEGER                                               
+			ACCESS          not-accessible                                          
+			STATUS          mandatory                                               
+			DESCRIPTION     "The index of ssid conf info table"                                  
+			::=  {  sfSsidFlowEntry  1  }	
+			
+		sfSsidName   			OBJECT-TYPE                                                     
+			SYNTAX          OCTET STRING                                                 
+			ACCESS          read-only                                          
+			STATUS          mandatory                                               
+			DESCRIPTION     "ssid's name"                                  
+			::=  {  sfSsidFlowEntry  2  }
+			
+		sfSsidRecvByte      OBJECT-TYPE                                                     
+			SYNTAX          OCTET STRING                                                 
+			ACCESS          read-only                                          
+			STATUS          mandatory                                               
+			DESCRIPTION     "Bytes that ssid recieved"                                  
+			::=  {  sfSsidFlowEntry  3  }
+			
+		sfSsidRecvErrPacket OBJECT-TYPE                                                     
+			SYNTAX          INTEGER                                                 
+			ACCESS          read-only                                          
+			STATUS          mandatory                                               
+			DESCRIPTION     "Error packets that ssid recieved"                                 
+			::=  {  sfSsidFlowEntry  4  }
+			
+		sfSsidRecvPacket   	OBJECT-TYPE                                                     
+			SYNTAX          INTEGER                                                
+			ACCESS          read-only                                          
+			STATUS          mandatory                                               
+			DESCRIPTION     "Packets that ssid recieved"                                   
+			::=  {  sfSsidFlowEntry  5 }
+			
+		sfSsidRecvUnicastPacket  	OBJECT-TYPE                                                     
+			SYNTAX         			INTEGER                                             
+			ACCESS          		read-only                                          
+			STATUS          		mandatory                                               
+			DESCRIPTION     		"Unicast packets that ssid recieved"                                   
+			::=  {  sfSsidFlowEntry  6  }
+
+		sfSsidRecvBroadcastPacket 	OBJECT-TYPE
+			SYNTAX         			INTEGER
+			ACCESS          		read-only
+			STATUS          		mandatory
+			DESCRIPTION     		"Unicast packets that ssid recieved"                                   
+			::=  {  sfSsidFlowEntry  7  }			
+			
+		sfSsidDropRecvPacket  	OBJECT-TYPE                                                     
+			SYNTAX          	INTEGER                                             
+			ACCESS          	read-only                                          
+			STATUS          	mandatory                                               
+			DESCRIPTION     	"Recieved packets that ssid drop"                                   
+			::=  {  sfSsidFlowEntry  8  }	
+
+		sfSsidSendByte      OBJECT-TYPE                                                     
+			SYNTAX          OCTET STRING                                                 
+			ACCESS          read-only                                          
+			STATUS          mandatory                                               
+			DESCRIPTION     "Bytes that ssid send"                                  
+			::=  {  sfSsidFlowEntry  9  }
+			
+		sfSsidSendErrPacket OBJECT-TYPE                                                     
+			SYNTAX          INTEGER                                                 
+			ACCESS          read-only                                          
+			STATUS          mandatory                                               
+			DESCRIPTION     "Error packets that ssid send"                                 
+			::=  {  sfSsidFlowEntry  10  }
+			
+		sfSsidSendPacket   	OBJECT-TYPE                                                     
+			SYNTAX          INTEGER                                                
+			ACCESS          read-only                                          
+			STATUS          mandatory                                               
+			DESCRIPTION     "Packets that ssid send"                                   
+			::=  {  sfSsidFlowEntry  11 }
+			
+		sfSsidSendUnicastPacket  	OBJECT-TYPE                                                     
+			SYNTAX         			INTEGER                                             
+			ACCESS          		read-only                                          
+			STATUS          		mandatory                                               
+			DESCRIPTION     		"Unicast packets that ssid send"                                   
+			::=  {  sfSsidFlowEntry  12  }	
+			
+		sfSsidDropSendPacket  	OBJECT-TYPE                                                     
+			SYNTAX          	INTEGER                                             
+			ACCESS          	read-only                                          
+			STATUS          	mandatory                                               
+			DESCRIPTION     	"Send packets that ssid drop"                                   
+			::=  {  sfSsidFlowEntry  13  }
+		
+		sfSsidSendBroadcastPacket	OBJECT-TYPE                                                     
+			SYNTAX          	INTEGER                                             
+			ACCESS          	read-only                                          
+			STATUS          	mandatory                                               
+			DESCRIPTION     	"Send broadcast packets"
+			::=  {  sfSsidFlowEntry  14  }
+		
+	egpNeighborLoss	TRAP-TYPE
+		ENTERPRISE		snmp
+		VARIABLES		{ egpNeighAddr }
+		DESCRIPTION		"egpNeighborLoss"
+		::=  5
+	warmStart	TRAP-TYPE
+		ENTERPRISE		snmp
+		DESCRIPTION		"warmStart"
+		::=  1
+	coldStart	TRAP-TYPE
+		ENTERPRISE		snmp
+		DESCRIPTION		"coldStart"
+		::=  0
+	linkUp	TRAP-TYPE
+		ENTERPRISE		snmp
+		VARIABLES		{ ifIndex }
+		DESCRIPTION		"linkUp"
+		::=  3
+	linkDown	TRAP-TYPE
+		ENTERPRISE		snmp
+		VARIABLES		{ ifIndex }
+		DESCRIPTION		"linkDown"
+		::=  2
+	authenticationFailure	TRAP-TYPE
+		ENTERPRISE		snmp
+		DESCRIPTION		"authenticationFailure"
+		::=  4
+	enterpriseSpecific	TRAP-TYPE
+		ENTERPRISE		sangfor
+		VARIABLES		{ sfSysIpAddr }
+		DESCRIPTION		"enterpriseSpecific"
+		::=  6
+END
